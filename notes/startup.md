@@ -22,3 +22,8 @@ Possibilities:
 - Code
 - Common crawl (C4) or the Pile
 - Generic text (e.g. finetuning from a folder of text)
+
+## Code & personal organisation
+This is the first time for a while that I've been able to do completely greenfield development and to be honest the freedom is a little bit intimidating - what if I get something wrong? What if my code is poorly organised? How do I even do a whole load of stuff I've taken for granted in the Google ecosystem (e.g. continuous integration, Python environments)? I think the answer is to not worry too much about this; this is a private project and I can make mistakes if I want to! In fact, that's part of the point. To be honest, I can probably code myself out of any problems I can code myself into - the key is just to write a lot of code!
+
+I'm particularly concerned about architecting this correctly, and am getting a bit paralysed with this. This is complicated by the fact that I'm not used to most of the tools I'm working with here (e.g. HuggingFace library, PyTorch) and so need to write a lot of sem-throwaway code. I think the way forward is probably to use notebooks to get used to these new tools and do prototyping.
