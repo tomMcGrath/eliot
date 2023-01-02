@@ -3,7 +3,7 @@ import tqdm
 
 class CharacterTokeniser(object):
 
-    def __init__(self, vocab_size, special_chars):
+    def __init__(self, vocab_size, special_chars=['[UNK]', '[PAD']):
         """Initialise the tokeniser."""
         self.vocab_size = vocab_size
         self.special_chars = special_chars
