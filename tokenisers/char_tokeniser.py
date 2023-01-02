@@ -66,7 +66,7 @@ class CharacterTokeniser(object):
 
     def detokenise(self, tokenised_data):
         """Detokenise data that uses this tokeniser's char <-> token map."""
-        return [self.tok_to_char[tok] for tok in tokenised_data]
+        return [self._tok_to_char[tok] for tok in tokenised_data]
 
     def detokenise_to_string(self, tokenised_data):
         """Convenience method for detokenising to a string rather than a list."""
