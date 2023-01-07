@@ -1,7 +1,9 @@
 import collections
+import math
 import tqdm
 
 class CharacterTokeniser(object):
+    """Class to process a sequence of characters into tokens with optional batching."""
 
     def __init__(self, vocab_size, special_chars=['[UNK]', '[PAD]']):
         """Initialise the tokeniser."""
@@ -38,7 +40,7 @@ class CharacterTokeniser(object):
         self._tok_to_char = tok_to_char
         self.is_trained = True
 
-    def tokenise(self, data, max_seq_len=512):
+    def tokenise(self, sequence):
         """Tokenise data using a learned tokeniser."""
         if not self.is_trained:
             raise ValueError('Tokeniser must be trained first')
@@ -46,7 +48,7 @@ class CharacterTokeniser(object):
         seq_len = 0
         
         # Tokenise
-        for char in data:
+        for char in sequence:
             if char in self._char_to_tok:
                 tok = self._char_to_tok[char]
             else:
@@ -54,15 +56,24 @@ class CharacterTokeniser(object):
                 
             tokens.append(tok)
             seq_len += 1
-            
-            if seq_len > max_seq_len:
-                raise ValueError('Sequence to tokenise exceeds length limit.')
-                
-        # Pad
-        num_to_pad = max_seq_len - seq_len
+        return tokens
+
+    def pad(self, tokens, target_batch_size):
+        """Pad a batch of tokens to an intended batch size."""
+        seq_len = len(tokens)
+        num_to_pad = target_batch_size - seq_len
         pad_tok = self._char_to_tok['[PAD]']
         tokens += [pad_tok] * num_to_pad
         return tokens
+
+    def tokenise_and_batch(self, sequence, batch_size):
+        """Tokenise a sequence and split it into batches with padding."""
+        tokens = self.tokenise(sequence)
+        seq_len_in_tokens = len(tokens)
+        split_count = math.ceil(seq_len_in_tokens / batch_size)
+        splits = [tokens[i*batch_size:(i+1)*batch_size] for i in range(split_count)]
+        splits[-1] = self.pad(tokens, batch_size)
+        return splits
 
     def detokenise(self, tokenised_data):
         """Detokenise data that uses this tokeniser's char <-> token map."""
