@@ -10,7 +10,7 @@ def make_processor(tokeniser, subseq_len):
 
         tokens = tokeniser.tokenise(seq)
         targets = [tokens[i+1] for i in range(len(tokens) - 1)]
-        split_tokens = char_tokeniser.split_into_subseqs(tokens, subseq_len)
+        split_tokens = char_tokeniser.split_into_subseqs(tokens[:-1], subseq_len)
         split_targets = char_tokeniser.split_into_subseqs(targets, subseq_len)
         data = [{'tokens': split_tokens[i], 'targets': split_targets[i]} for i in range(len(split_tokens))]
         return data
