@@ -76,10 +76,10 @@ class CharacterTokeniser(object):
         """Tokenise a sequence and split it into batches with padding."""
         tokens = self.tokenise(sequence)
         splits = self._split_into_subsequences(tokens, subseq_len)
-        splits[-1] = self.pad(tokens, subseq_len)
+        splits[-1] = self.pad(splits[-1], subseq_len)
         if discard_padded:
             if self._char_to_tok['[PAD]'] in splits[-1]:
-                splits = splits[:-1]
+                splits[-1] = splits[:-1]
         return splits
 
     def detokenise(self, tokenised_data):
