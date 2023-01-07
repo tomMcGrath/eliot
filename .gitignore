@@ -1,1 +1,2 @@
-prototyping/.ipynb_checkpoints/batch_prototyping-checkpoint.ipynb
+*.ipynb
+*.pyc
