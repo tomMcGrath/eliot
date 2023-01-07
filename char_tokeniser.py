@@ -66,13 +66,16 @@ class CharacterTokeniser(object):
         tokens += [pad_tok] * num_to_pad
         return tokens
 
-    def tokenise_and_batch(self, sequence, batch_size):
+    def tokenise_and_batch(self, sequence, batch_size, discard_padded=False):
         """Tokenise a sequence and split it into batches with padding."""
         tokens = self.tokenise(sequence)
         seq_len_in_tokens = len(tokens)
         split_count = math.ceil(seq_len_in_tokens / batch_size)
         splits = [tokens[i*batch_size:(i+1)*batch_size] for i in range(split_count)]
         splits[-1] = self.pad(tokens, batch_size)
+        if discard_padded:
+            if self._char_to_tok['[PAD]'] in splits[-1]:
+                splits = splits[:-1]
         return splits
 
     def detokenise(self, tokenised_data):
