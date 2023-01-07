@@ -2,6 +2,16 @@ import collections
 import math
 import tqdm
 
+def split_into_subseqs(seq, subseq_len):
+    """Split a sequence into subsequences."""
+    seq_len_in_tokens = len(seq)
+    if not seq_len_in_tokens:
+        raise ValueError('Trying to split a sequence of length zero.')
+    split_count = math.ceil(seq_len_in_tokens / subseq_len)
+    splits = [seq[i*subseq_len:(i+1)*subseq_len] for i in range(split_count)]
+    return splits
+
+
 class CharacterTokeniser(object):
     """Class to process a sequence of characters into tokens with optional batching."""
 
@@ -63,19 +73,10 @@ class CharacterTokeniser(object):
         tokens += [pad_tok] * num_to_pad
         return tokens
 
-    def _split_into_subsequences(self, tokens, subseq_len):
-        """Split a sequence into subsequences."""
-        seq_len_in_tokens = len(tokens)
-        if not seq_len_in_tokens:
-            raise ValueError('Trying to split a sequence of length zero.')
-        split_count = math.ceil(seq_len_in_tokens / subseq_len)
-        splits = [tokens[i*subseq_len:(i+1)*subseq_len] for i in range(split_count)]
-        return splits
-
     def tokenise_and_batch(self, sequence, subseq_len, discard_padded=False):
         """Tokenise a sequence and split it into batches with padding."""
         tokens = self.tokenise(sequence)
-        splits = self._split_into_subsequences(tokens, subseq_len)
+        splits = split_into_subseqs(tokens, subseq_len)
         splits[-1] = self.pad(splits[-1], subseq_len)
         if discard_padded:
             if self._char_to_tok['[PAD]'] in splits[-1]:
