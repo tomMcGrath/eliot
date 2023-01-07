@@ -11,9 +11,14 @@ def load_wikitext_train():
     return dataset
 
 
-def get_text_data(ds_iterator):
+def text_only(ds_iterator):
     """WikiText-specific text iterator."""
     for record in ds_iterator:
         text = record['text'][0]
         if text:
             yield text
+
+
+def make_shuffled_text_iterator(dataset):
+    """Creates a shuffled text-only iterator for a dataset."""
+    return text_only(dataset.shuffle().iter(batch_size=1))
