@@ -51,7 +51,7 @@ class DataSource:
             next_datum = self._data_deque.popleft()
         except IndexError:
             self._refill()
-            next_datum = self._data_deque.popleft()
+            next_datum = self.get_next()
             
         if not self._data_deque:  # prefer refilling before IndexError
             self._refill()
