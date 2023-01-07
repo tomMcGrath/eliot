@@ -44,10 +44,8 @@ class CharacterTokeniser(object):
         """Tokenise data using a learned tokeniser."""
         if not self.is_trained:
             raise ValueError('Tokeniser must be trained first')
+
         tokens = []
-        seq_len = 0
-        
-        # Tokenise
         for char in sequence:
             if char in self._char_to_tok:
                 tok = self._char_to_tok[char]
@@ -55,7 +53,6 @@ class CharacterTokeniser(object):
                 tok = self._char_to_tok['[UNK]']
                 
             tokens.append(tok)
-            seq_len += 1
         return tokens
 
     def pad(self, tokens, target_seq_len):
