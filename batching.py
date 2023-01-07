@@ -1,4 +1,18 @@
 import collections
+import char_tokeniser
+
+
+def process_sequence(tokeniser, seq, subseq_len):
+    """Process a sequence into batches of tokens and targets."""
+    if not seq:
+        return None
+    
+    tokens = tokeniser.tokenise(seq)
+    targets = [tokens[i+1] for i in range(len(tokens) - 1)]
+    split_tokens = char_tokeniser.split_into_subseqs(tokens, subseq_len)
+    split_targets = char_tokeniser.split_into_subseqs(targets, subseq_len)
+    data = [{'tokens': split_tokens[i], 'targets': split_targets[i]} for i in range(len(split_tokens))]
+    return data
 
 class DataSource:
     
