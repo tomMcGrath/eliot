@@ -66,6 +66,7 @@ class BatchedDataSource:
         self._data_sources = data_sources
         
     def get_next(self):
+        """Collates the outputs of individual data sources and batches."""
         unbatched = [ds.get_next() for ds in self._data_sources]
         
         # This process feels slow but I haven't profiled yet
