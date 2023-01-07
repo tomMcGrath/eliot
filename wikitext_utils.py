@@ -16,4 +16,4 @@ def get_text_data(ds_iterator):
     for record in ds_iterator:
         text = record['text'][0]
         if text:
-            yield record['text'][0]
+            yield text
