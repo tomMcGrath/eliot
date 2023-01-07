@@ -1,5 +1,6 @@
 import collections
 import char_tokeniser
+import numpy as np
 
 
 def make_processor(tokeniser, subseq_len, discard_last=False):
@@ -57,3 +58,19 @@ class DataSource:
             self._refill()
             
         return next_datum
+
+
+class BatchedDataSource:
+    
+    def __init__(self, data_sources):
+        self._data_sources = data_sources
+        
+    def get_next(self):
+        unbatched = [ds.get_next() for ds in self._data_sources]
+        
+        # This process feels slow but I haven't profiled yet
+        batched = {}
+        for k in unbatched[0].keys():  # assume all keys the same
+            batched[k] = np.stack([x[k] for x in unbatched])
+            
+        return batched
