@@ -1,6 +1,7 @@
 import torch
 
 class Embedding(torch.nn.Module):
+    """Embeds token indices of shape [B, T]."""
     
     def __init__(self, vocab_size, embedding_size, dtype=torch.float32):
         """Initialises the embedding."""
