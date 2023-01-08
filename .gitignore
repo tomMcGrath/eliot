@@ -1,1 +1,8 @@
 *.pyc
+batch_prototyping.ipynb
+pytorch_scratchpad.ipynb
+Untitled.ipynb
+.ipynb_checkpoints/batch_prototyping-checkpoint.ipynb
+.ipynb_checkpoints/Demo-checkpoint.ipynb
+.ipynb_checkpoints/pytorch_scratchpad-checkpoint.ipynb
+.ipynb_checkpoints/Untitled-checkpoint.ipynb
