@@ -41,3 +41,33 @@ class LinearModel(torch.nn.Module):
     def forward(self, tokens):
         logits = self._model(tokens)
         return logits
+
+
+class RNNModel(torch.nn.Module):
+    """The venerable RNN."""
+
+    def __init__(self, vocab_size, embedding_size, num_layers, dtype=torch.float32):
+        super(RNNModel, self).__init__()
+        self.vocab_size = vocab_size
+        self.embedding_size = embedding_size
+        self.num_layers = num_layers
+        self.dtype = dtype
+        self._setup_model()
+
+    def _setup_model(self):
+        self._embedder = Embedding(
+            self.vocab_size, self.embedding_size, self.dtype)
+        self._rnn = torch.nn.RNN(
+            input_size=self.embedding_size,
+            hidden_size=self.embedding_size,
+            num_layers=self.num_layers,
+            batch_first=True,
+            )
+        self._unembedder = torch.nn.Linear(
+            self.embedding_size, self.vocab_size, self.dtype)
+
+    def forward(self, tokens):
+        embeds = self._embedder(tokens)
+        rnn_out, hiddens = self._rnn(embeds)
+        logits = self._unembedder(rnn_out)
+        return logits, hiddens
