@@ -84,3 +84,20 @@ class MLP(torch.nn.Module):
         hidden = self._input_linear(input)
         hidden = torch.nn.functional.relu(hidden)
         return self._output_linear(hidden)
+
+
+class TransformerBlock(torch.nn.Module):
+    """Implements a full Transformer layer with pre-layernorm."""
+
+    def __init__(self, d_model, n_heads, d_head, maxlen, d_mlp) -> None:
+        super().__init__()
+        self._pre_attn_ln = torch.nn.LayerNorm(d_model,)
+        self._attn = Attention(n_heads, d_head, d_model, maxlen)
+        self._pre_mlp_ln = torch.nn.LayerNorm(d_model)
+        self._mlp = MLP(d_mlp, d_model)
+
+    def forward(self, input: torch.Tensor) -> torch.Tensor:
+        attn_out = self._attn(self._pre_attn_ln(input))
+        pre_mlp_residual = input + attn_out
+        mlp_out = self._mlp(self._pre_mlp_ln(pre_mlp_residual))
+        return pre_mlp_residual + mlp_out

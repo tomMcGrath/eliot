@@ -10,6 +10,7 @@ B = 5
 N_HEADS = 7
 D_HEAD = 11
 D_MODEL = N_HEADS * D_HEAD
+D_MLP = 4 * D_MODEL
 
 class TestLogits:
 
@@ -83,6 +84,19 @@ class TestAttention:
         attn = transformer.Attention(N_HEADS, D_HEAD, D_MODEL, T)
         input = torch.randn(size=(B, T, D_MODEL))
         output = attn(input)
+        torch.testing.assert_close(
+            input.shape,
+            output.shape
+        )
+
+
+class TestTransformerBlock:
+
+    def test_shape(self):
+        layer = transformer.TransformerBlock(
+            D_MODEL, N_HEADS, D_HEAD, T, D_MLP)
+        input = torch.randn(size=(B, T, D_MODEL))
+        output = layer(input)
         torch.testing.assert_close(
             input.shape,
             output.shape
