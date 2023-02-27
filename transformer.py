@@ -71,3 +71,16 @@ class Attention(torch.nn.Module):
         v = self._v_proj(input).view((b, t, self.n_heads, self.d_head))
         flattened_outputs = weighted_sum(attn_weights, v).flatten(start_dim=2)
         return self._output_linear(flattened_outputs)
+
+
+class MLP(torch.nn.Module):
+
+    def __init__(self, d_mlp: int, d_model: int) -> None:
+        super().__init__()
+        self._input_linear = torch.nn.Linear(d_model, d_mlp)
+        self._output_linear = torch.nn.Linear(d_mlp, d_model)
+
+    def forward(self, input: torch.Tensor) -> torch.Tensor:
+        hidden = self._input_linear(input)
+        hidden = torch.nn.functional.relu(hidden)
+        return self._output_linear(hidden)
