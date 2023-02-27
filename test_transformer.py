@@ -75,3 +75,15 @@ class TestWeightedSum:
         weights = torch.eye(T).repeat(B, N_HEADS, 1, 1)
         identity_outputs = transformer.weighted_sum(weights, v)
         torch.testing.assert_close(identity_outputs, v)
+
+
+class TestAttention:
+
+    def test_shape(self):
+        attn = transformer.Attention(N_HEADS, D_HEAD, D_MODEL, T)
+        input = torch.randn(size=(B, T, D_MODEL))
+        output = attn(input)
+        torch.testing.assert_close(
+            input.shape,
+            output.shape
+        )

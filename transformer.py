@@ -28,7 +28,7 @@ def weighted_sum(weights: torch.Tensor, values: torch.Tensor) -> torch.Tensor:
 
 
 class Attention(torch.nn.Module):
-    """Compute multi-head self-attention."""
+    """Compute multi-head self-attention. TODO: try einsum version."""
 
     def __init__(self,
                  n_heads: int,
@@ -70,6 +70,4 @@ class Attention(torch.nn.Module):
         # Sum value-weighted outputs
         v = self._v_proj(input).view((b, t, self.n_heads, self.d_head))
         flattened_outputs = weighted_sum(attn_weights, v).flatten(start_dim=2)
-        # attn_outputs = (attn_weights @ v).view(b, t, self.n_heads * self.d_head)
-
         return self._output_linear(flattened_outputs)
