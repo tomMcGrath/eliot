@@ -35,3 +35,43 @@ class TestLogits:
         k = torch.ones((B, T, N_HEADS, D_HEAD))
         logits = transformer.compute_attn_logits(q, k)
         torch.testing.assert_close(logits, torch.ones((B, N_HEADS, T, T)))
+
+
+class TestSoftmax:
+
+    def test_build_causal_mask(self):
+        mask = transformer.build_causal_mask(T)
+        torch.testing.assert_close(
+            mask.triu(diagonal=1),
+            torch.full(mask.size(), -torch.inf).triu(diagonal=1)
+        )
+        torch.testing.assert_close(
+            mask.tril(),
+            torch.zeros(mask.size()).tril()
+        )
+
+    def test_apply_causal_mask(self):
+        logits = torch.randn(size=(B, N_HEADS, T, T))
+        mask = transformer.build_causal_mask(T)
+        weights = transformer.masked_softmax(logits, mask)
+        torch.testing.assert_close(
+            weights.triu(diagonal=1),
+            torch.zeros_like(weights).triu(diagonal=1),
+        )
+    
+    def test_final_dim_sums_to_one(self):
+        logits = torch.randn(size=(B, N_HEADS, T, T))
+        mask = transformer.build_causal_mask(T)
+        weights = transformer.masked_softmax(logits, mask)
+        torch.testing.assert_close(
+            torch.sum(weights, dim=-1),
+            torch.ones(size=(B, N_HEADS, T)),
+            )
+
+class TestWeightedSum:
+
+    def test_is_identity(self):
+        v = torch.randn(size=(B, T, N_HEADS, D_HEAD))
+        weights = torch.eye(T).repeat(B, N_HEADS, 1, 1)
+        identity_outputs = transformer.weighted_sum(weights, v)
+        torch.testing.assert_close(identity_outputs, v)
