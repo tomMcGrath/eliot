@@ -1,4 +1,6 @@
 import torch
+import transformer
+
 
 class Embedding(torch.nn.Module):
     """Embeds token indices of shape [B, T]."""
@@ -15,7 +17,6 @@ class Embedding(torch.nn.Module):
         
     def forward(self, tokens):
         """Apply the embedding to a series of tokens of shape [B, T]."""
-        # tokens = torch.tensor(tokens)  # consider moving conversion to torch upstream?
         token_one_hots = torch.nn.functional.one_hot(
             tokens, num_classes=self.vocab_size).to(self.dtype)
         return self.embed(token_one_hots)
@@ -71,3 +72,22 @@ class RNNModel(torch.nn.Module):
         rnn_out, hiddens = self._rnn(embeds)
         logits = self._unembedder(rnn_out)
         return logits, hiddens
+
+
+class TransformerModel(torch.nn.Module):
+    """A conventional Transformer language model."""
+
+    def __init__(self, vocab_size, num_layers, d_model, n_heads, d_head, maxlen, d_mlp):
+        super().__init__()
+        self._embedder = Embedding(vocab_size, d_model)
+        self._unembedder = torch.nn.Linear(d_model, vocab_size)
+        transformer_blocks = [
+            transformer.TransformerBlock(d_model, n_heads, d_head, maxlen, d_mlp) 
+            for _ in range(num_layers)]
+        self._net = torch.nn.Sequential(*transformer_blocks)
+
+    def forward(self, tokens):
+        z = self._embedder(tokens)
+        z = self._net(z)
+        logits = self._unembedder(z)
+        return logits
