@@ -61,7 +61,7 @@ class DataSource:
 
 
 class BatchedDataSource:
-    
+
     def __init__(self, data_sources):
         self._data_sources = data_sources
 

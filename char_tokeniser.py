@@ -29,7 +29,6 @@ class CharacterTokeniser(object):
         for record in tqdm.tqdm(dataset):
             for char in record['text']:
                 char_counts[char] += 1
- 
         return char_counts
 
     def train(self, dataset):

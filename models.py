@@ -13,7 +13,7 @@ class Embedding(torch.nn.Module):
         self.dtype = dtype
         self.embed = torch.nn.Linear(
             vocab_size, embedding_size, dtype=self.dtype)
-        
+
     def forward(self, tokens):
         """Apply the embedding to a series of tokens of shape [B, T]."""
         token_one_hots = torch.nn.functional.one_hot(
