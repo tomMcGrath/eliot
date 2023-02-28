@@ -12,6 +12,7 @@ D_HEAD = 11
 D_MODEL = N_HEADS * D_HEAD
 D_MLP = 4 * D_MODEL
 
+
 class TestLogits:
 
     def test_shape_is_correct(self):
@@ -59,7 +60,7 @@ class TestSoftmax:
             weights.triu(diagonal=1),
             torch.zeros_like(weights).triu(diagonal=1),
         )
-    
+
     def test_final_dim_sums_to_one(self):
         logits = torch.randn(size=(B, N_HEADS, T, T))
         mask = transformer.build_causal_mask(T)
@@ -68,6 +69,7 @@ class TestSoftmax:
             torch.sum(weights, dim=-1),
             torch.ones(size=(B, N_HEADS, T)),
             )
+
 
 class TestWeightedSum:
 

@@ -2,6 +2,7 @@ import collections
 import math
 import tqdm
 
+
 def split_into_subseqs(seq, subseq_len):
     """Split a sequence into subsequences."""
     seq_len_in_tokens = len(seq)
@@ -28,14 +29,14 @@ class CharacterTokeniser(object):
         for record in tqdm.tqdm(dataset):
             for char in record['text']:
                 char_counts[char] += 1
-                
+ 
         return char_counts
 
     def train(self, dataset):
         """Trains the tokeniser on a HF dataset."""
         char_counts = self._get_chars_and_counts(dataset)
         chars_by_count = [(char, char_counts[char]) for char in char_counts]
-        chars_by_count = sorted(chars_by_count, key=lambda x:x[1], reverse=True)
+        chars_by_count = sorted(chars_by_count, key=lambda x: x[1], reverse=True)
         chars_to_keep = [(char, 0) for char in self.special_chars] + chars_by_count[:self.num_nonspecial_chars]
 
         # Setup character <-> token mapping
@@ -61,7 +62,7 @@ class CharacterTokeniser(object):
                 tok = self._char_to_tok[char]
             else:
                 tok = self._char_to_tok['[UNK]']
-                
+
             tokens.append(tok)
         return tokens
 

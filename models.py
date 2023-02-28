@@ -4,7 +4,7 @@ import transformer
 
 class Embedding(torch.nn.Module):
     """Embeds token indices of shape [B, T]."""
-    
+
     def __init__(self, vocab_size, embedding_size, dtype=torch.float32):
         """Initialises the embedding."""
         super(Embedding, self).__init__()
@@ -13,7 +13,6 @@ class Embedding(torch.nn.Module):
         self.dtype = dtype
         self.embed = torch.nn.Linear(
             vocab_size, embedding_size, dtype=self.dtype)
-        
         
     def forward(self, tokens):
         """Apply the embedding to a series of tokens of shape [B, T]."""
@@ -82,7 +81,7 @@ class TransformerModel(torch.nn.Module):
         self._embedder = Embedding(vocab_size, d_model)
         self._unembedder = torch.nn.Linear(d_model, vocab_size)
         transformer_blocks = [
-            transformer.TransformerBlock(d_model, n_heads, d_head, maxlen, d_mlp) 
+            transformer.TransformerBlock(d_model, n_heads, d_head, maxlen, d_mlp)
             for _ in range(num_layers)]
         self._net = torch.nn.Sequential(*transformer_blocks)
 

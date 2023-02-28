@@ -28,13 +28,13 @@ def make_processor(tokeniser, subseq_len, discard_last=False):
 
 
 class DataSource:
-    
+
     def __init__(self, data_iterator, process_fn):
         """Initialise the DataSource."""
         self.data_iterator = data_iterator
         self.process_fn = process_fn
         self._data_deque = collections.deque()
-        
+
     def _refill(self):
         """Gets a new sequence from the data iterator and processes for the model."""
         processed_next_record = None
@@ -45,7 +45,7 @@ class DataSource:
             except ValueError:
                 continue
         self._data_deque.extend(processed_next_record)
-    
+
     def get_next(self):
         """Get next datum and refill if necessary."""
         try:
@@ -53,10 +53,10 @@ class DataSource:
         except IndexError:
             self._refill()
             next_datum = self.get_next()
-            
+
         if not self._data_deque:  # prefer refilling before IndexError
             self._refill()
-            
+
         return next_datum
 
 
@@ -64,14 +64,14 @@ class BatchedDataSource:
     
     def __init__(self, data_sources):
         self._data_sources = data_sources
-        
+
     def get_next(self):
         """Collates the outputs of individual data sources and batches."""
         unbatched = [ds.get_next() for ds in self._data_sources]
-        
+
         # This process feels slow but I haven't profiled yet
         batched = {}
         for k in unbatched[0].keys():  # assume all keys the same
             batched[k] = np.stack([x[k] for x in unbatched])
-            
+
         return batched

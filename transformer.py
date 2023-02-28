@@ -35,7 +35,7 @@ class Attention(torch.nn.Module):
                  d_head: int,
                  d_model: int,
                  maxlen: int,
-    ) -> None:
+                 ) -> None:
         super().__init__()
 
         # Define attributes
@@ -57,7 +57,7 @@ class Attention(torch.nn.Module):
     def forward(self, input: torch.Tensor) -> torch.Tensor:
         # Get shape info
         b, t, _ = input.shape
-        
+
         # Compute queries, keys & values
         # View is doing [B, T, H*d_head] -> [B, T, H, d_head]
         q = self._q_proj(input).view((b, t, self.n_heads, self.d_head))
