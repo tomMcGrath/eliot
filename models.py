@@ -79,6 +79,7 @@ class TransformerModel(torch.nn.Module):
     def __init__(self, vocab_size, num_layers, d_model, n_heads, d_head, maxlen, d_mlp):
         super().__init__()
         self._embedder = Embedding(vocab_size, d_model)
+        self._pos_embeddings = Embedding(maxlen, d_model)
         self._unembedder = torch.nn.Linear(d_model, vocab_size)
         transformer_blocks = [
             transformer.TransformerBlock(d_model, n_heads, d_head, maxlen, d_mlp)
@@ -86,7 +87,10 @@ class TransformerModel(torch.nn.Module):
         self._net = torch.nn.Sequential(*transformer_blocks)
 
     def forward(self, tokens):
-        z = self._embedder(tokens)
+        _, seq_len = tokens.shape
+        token_positions = torch.arange(
+            seq_len, device=tokens.device).view(1, seq_len)
+        z = self._embedder(tokens) + self._pos_embeddings(token_positions)
         z = self._net(z)
         logits = self._unembedder(z)
         return logits
