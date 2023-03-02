@@ -1,6 +1,5 @@
 import models
 import torch
-import numpy as np
 
 
 vocab_size = 3
@@ -11,6 +10,7 @@ d_head = int(d_model / n_heads)
 maxlen = 4
 d_mlp = int(4 * d_model)
 batch_size = 2
+
 
 def setup_model():
     """Setup simple model to test."""
@@ -74,7 +74,6 @@ class TestMemorisation:
             logits = model(memorise_me)
             # cross-entropy expects [B, classes, ...]
             loss = loss_fn(logits.transpose(1, 2), targets)
-            
             # Apply optimiser
             optimiser.zero_grad()
             loss.backward()
