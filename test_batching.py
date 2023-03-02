@@ -21,4 +21,5 @@ class TestDataSource:
                        for _ in range(batch_size)]
         batched_data_source = batching.BatchedDataSource(datasources)
         batched_data = batched_data_source.get_next()
-        assert batched_data.shape == torch.Size([batch_size, seq_len])
+        assert batched_data['tokens'].shape == torch.Size([batch_size, seq_len])
+        assert batched_data['tokens'].shape == batched_data['targets'].shape
