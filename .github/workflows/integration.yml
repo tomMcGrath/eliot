@@ -23,6 +23,7 @@ jobs:
           pip install numpy
           pip install torch --extra-index-url https://download.pytorch.org/whl/cpu
           pip3 install tiktoken
+          pip install datasets
           if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
       - name: Lint with flake8
         run: |
