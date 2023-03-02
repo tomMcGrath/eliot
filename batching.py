@@ -1,30 +1,25 @@
 import collections
-import char_tokeniser
 import numpy as np
+import torch
 
 
-def make_processor(tokeniser, subseq_len, discard_last=False):
-    def process_sequence(seq):
-        """Process a sequence into batches of tokens and targets."""
-        if not seq:
-            return None
-
-        tokens = tokeniser.tokenise(seq)
-        targets = [tokens[i+1] for i in range(len(tokens) - 1)]
-        split_tokens = char_tokeniser.split_into_subseqs(tokens[:-1], subseq_len)
-        split_targets = char_tokeniser.split_into_subseqs(targets, subseq_len)
-
-        # Pad or discard
-        if discard_last:
+def make_processor(encoding_fn, seq_len):
+    def process_fn(txt):
+        tokens = torch.tensor(encoding_fn(txt))
+        targets = tokens.roll(-1)
+        tokens = tokens[:-1]  # nothing to predict at last token
+        targets = targets[:-1]  # first token has rolled around
+        
+        split_tokens = tokens.split(seq_len)
+        split_targets = targets.split(seq_len)
+        
+        if len(split_tokens[-1]) < seq_len:
             split_tokens = split_tokens[:-1]
             split_targets = split_targets[:-1]
-        else:
-            split_tokens[-1] = tokeniser.pad(split_tokens[-1], subseq_len)
-            split_targets[-1] = tokeniser.pad(split_targets[-1], subseq_len)
-
-        data = [{'tokens': split_tokens[i], 'targets': split_targets[i]} for i in range(len(split_tokens))]
-        return data
-    return process_sequence
+            
+        return [{'tokens': split_tokens[i], 'targets': split_targets[i]} 
+                for i in range(len(split_tokens))]
+    return process_fn
 
 
 class DataSource:
@@ -72,6 +67,6 @@ class BatchedDataSource:
         # This process feels slow but I haven't profiled yet
         batched = {}
         for k in unbatched[0].keys():  # assume all keys the same
-            batched[k] = np.stack([x[k] for x in unbatched])
+            batched[k] = torch.stack([x[k] for x in unbatched])
 
         return batched
