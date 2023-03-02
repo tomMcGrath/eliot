@@ -1,5 +1,4 @@
 import collections
-import numpy as np
 import torch
 
 
@@ -9,15 +8,15 @@ def make_processor(encoding_fn, seq_len):
         targets = tokens.roll(-1)
         tokens = tokens[:-1]  # nothing to predict at last token
         targets = targets[:-1]  # first token has rolled around
-        
+
         split_tokens = tokens.split(seq_len)
         split_targets = targets.split(seq_len)
-        
+
         if len(split_tokens[-1]) < seq_len:
             split_tokens = split_tokens[:-1]
             split_targets = split_targets[:-1]
-            
-        return [{'tokens': split_tokens[i], 'targets': split_targets[i]} 
+
+        return [{'tokens': split_tokens[i], 'targets': split_targets[i]}
                 for i in range(len(split_tokens))]
     return process_fn
 

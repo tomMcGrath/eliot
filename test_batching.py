@@ -15,7 +15,7 @@ class TestDataSource:
         seq_len = 10
         batch_size = 5
         process_fn = batching.make_processor(encoding.encode, seq_len)
-        datasources = [batching.DataSource(text_iterator, process_fn) 
+        datasources = [batching.DataSource(text_iterator, process_fn)
                        for _ in range(batch_size)]
         batched_data_source = batching.BatchedDataSource(datasources)
         batched_data = batched_data_source.get_next()
