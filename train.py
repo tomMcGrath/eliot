@@ -65,8 +65,7 @@ cuda0 = torch.device('cuda:0')
 model = model.to(cuda0)
 wandb.watch(model)
 
-n_steps = training_config.warmup_steps + training_config.post_warmup_steps
-for step in range(n_steps):
+for step in range(training_config.total_num_steps):
   # Forward pass
   batched_data = batched_data_source.get_next()
   # TODO: benchmark vs with pin_memory() and non_blocking=True

@@ -26,6 +26,10 @@ class TrainingConfig:
     adam_beta1: float
     adam_beta2: float
 
+    @property
+    def total_num_steps(self):
+        return self.warmup_steps + self.post_warmup_steps
+
 
 @dataclasses.dataclass
 class DatasetConfig:
