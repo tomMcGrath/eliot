@@ -97,4 +97,4 @@ class TestPreflight:
 class TestTrainingConfig:
 
     def test_step_count_helper(self):
-        assert training_cfg.total_num_steps = 2
+        assert training_cfg.total_num_steps == 2
