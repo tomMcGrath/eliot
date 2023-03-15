@@ -1,6 +1,8 @@
 import batching
+import config
 import models
 import numpy as np
+import optimization
 import tiktoken
 import torch
 import wandb
@@ -47,37 +49,23 @@ model = models.TransformerModel(
 )
 print('Model built')
 
-# Create optimiser
-# Use this inside a LambdaLR
-def build_scheduler(warmup_steps, lr_max, cosine_steps):
-  def scheduler(t):
-    if t <= warmup_steps:  # linear warmup
-      return t * lr_max / warmup_steps
+training_config = config.TrainingConfig(warmup_steps=int(2e4),
+                                        post_warmup_steps=int(6e5),
+                                        lr_max=6e-4,
+                                        lr_min=0.,
+                                        weight_decay=1e-1,
+                                        adam_beta1=0.9,
+                                        adam_beta2=0.95)
 
-    else:  # cosine decay -> 0
-      t_cos = t - warmup_steps
-      return 0.5 * lr_max * (1 +  np.cos(np.pi * t_cos / cosine_steps))
-
-  return scheduler
-
-lr_max = 6e-4
-weight_decay = 1e-1
-warmup_steps = int(2e4)
-n_steps = int(6e5)
-beta1 = 0.9
-beta2 = 0.95
-
-optimizer = torch.optim.AdamW(
-  model.parameters(), lr=1, betas=(beta1, beta2), weight_decay=weight_decay)
-lr_fn = build_scheduler(
-  warmup_steps=warmup_steps, lr_max=lr_max, cosine_steps=n_steps-warmup_steps)
-scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, lr_lambda=lr_fn)
+optimizer, scheduler = optimization.build_optimizer_and_scheduler(
+  model, training_config)
 loss_fn = torch.nn.CrossEntropyLoss()
 
 cuda0 = torch.device('cuda:0')
 model = model.to(cuda0)
 wandb.watch(model)
 
+n_steps = training_config.warmup_steps + training_config.post_warmup_steps
 for step in range(n_steps):
   # Forward pass
   batched_data = batched_data_source.get_next()
