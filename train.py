@@ -16,6 +16,14 @@ with open(config_path, 'r') as jsonfile:
   config_json = jsonfile.read()
 cfg = config.Config.from_json_str(config_json)
 
+print('Running prelaunch checks')
+prelaunch_check_results = cfg.passes_prelaunch_checks()
+if prelaunch_check_results.passes:
+  print('Prelaunch checks passed, continuing with setup')
+else:
+  prelaunch_errs = prelaunch_check_results.errs
+  raise ValueError(f'Prelaunch checks failed with errors:\n{prelaunch_errs}')
+
 # Setup logging
 wandb.init(project='eliot')
 
