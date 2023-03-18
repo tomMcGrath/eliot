@@ -30,6 +30,12 @@ training_cfg = config.TrainingConfig(
     adam_beta2=1.
     )
 
+cfg = config.Config(model_config=model_cfg,
+                    training_config=training_cfg,
+                    dataset_config=dataset_cfg)
+
+test_config_json_path = 'configs/test.json'
+
 
 def check_err_prefix_in_list(err_prefix, err_list):
     """Helper function to check if some prefix of an error 
@@ -98,3 +104,18 @@ class TestTrainingConfig:
 
     def test_step_count_helper(self):
         assert training_cfg.total_num_steps == 2
+
+
+class TestConfigJSON:
+
+    def test_read_json_str(self):
+        with open(test_config_json_path, 'r') as config_file:
+            json_str = config_file.read()
+
+        loaded_cfg = config.Config.from_json_str(json_str)
+        assert loaded_cfg == cfg
+
+    def test_json_output_is_correct(self):
+        output_json_str = cfg.to_json_str()
+        restored_cfg = config.Config.from_json_str(output_json_str)
+        assert restored_cfg == cfg

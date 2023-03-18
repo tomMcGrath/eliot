@@ -1,4 +1,5 @@
 import dataclasses
+import json
 from typing import List
 
 
@@ -53,6 +54,23 @@ class Config:
     model_config: ModelConfig
     training_config: TrainingConfig
     dataset_config: DatasetConfig
+
+    @classmethod
+    def from_json_str(cls, json_path):
+        """Load a complete config from a JSON-formatted string."""
+        config_json = json.loads(json_path)
+        return cls(model_config=ModelConfig(**config_json['model_config']),
+                   training_config= TrainingConfig(**config_json['training_config']),
+                   dataset_config=DatasetConfig(**config_json['dataset_config']))
+    
+    def to_json_str(self):
+        """Convert config dict to a JSON-formatted string."""
+        config_dict = {
+            'model_config': dataclasses.asdict(self.model_config),
+            'training_config': dataclasses.asdict(self.training_config),
+            'dataset_config': dataclasses.asdict(self.dataset_config),
+            }
+        return json.dumps(config_dict)
 
     def passes_prelaunch_checks(self):
         """Check that config passes all prelaunch sanity checks."""

@@ -1,0 +1,27 @@
+{
+    "model_config": {
+        "num_layers": 12,
+        "d_model": 768,
+        "n_heads": 12,
+        "d_head": 64,
+        "d_mlp": 3072,
+        "vocab_size": 50257,
+        "tokenizer": "gpt2",
+        "max_len": 1024
+    },
+    "training_config": {
+        "warmup_steps": 20000,
+        "post_warmup_steps": 600000,
+        "lr_max": 6E-4,
+        "lr_min": 0.0,
+        "weight_decay": 0.1,
+        "adam_beta1": 0.9,
+        "adam_beta2": 0.95
+    },
+    "dataset_config": {
+        "train_dataset": "wikitext",
+        "seq_len": 1024,
+        "batch_size": 8,
+        "tokenizer": "gpt2"
+    }
+}
