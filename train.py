@@ -1,5 +1,6 @@
 import batching
 import config
+import data_loading
 import models
 import numpy as np
 import optimization
@@ -25,25 +26,10 @@ else:
   raise ValueError(f'Prelaunch checks failed with errors:\n{prelaunch_errs}')
 
 # Setup logging
-wandb.init(project='eliot')
+wandb.init(project='eliot-c4')
 
 # Load data
-print('Loading data')
-dataset_config = cfg.dataset_config
-dataset = wikitext_utils.load_wikitext_train()
-text_iterator = wikitext_utils.make_shuffled_text_iterator(dataset)
-encoding = tiktoken.get_encoding('gpt2')
-print('Data loaded')
-
-# Create datasource
-print('Building datasources')
-seq_len = dataset_config.seq_len
-batch_size = dataset_config.batch_size
-process_fn = batching.make_processor(encoding.encode, seq_len)
-datasources = [batching.DataSource(text_iterator, process_fn)
-                       for _ in range(batch_size)]
-batched_data_source = batching.BatchedDataSource(datasources)
-print('Datasources built')
+dataset, tokeniser = data_loading.build_from_config(cfg.dataset_config)
 
 # Create model
 # TODO: try rounding vocab_size to nearest multiple of 64
@@ -76,7 +62,7 @@ print('Training setup complete')
 print('Setup complete! Beginning training')
 for step in range(training_config.total_num_steps):
   # Forward pass
-  batched_data = batched_data_source.get_next()
+  batched_data = dataset.get_next_batch()
   # TODO: benchmark vs with pin_memory() and non_blocking=True
   tokens = batched_data['tokens'].to(cuda0)
   targets = batched_data['targets'].to(cuda0)

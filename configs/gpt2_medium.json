@@ -19,7 +19,7 @@
         "adam_beta2": 0.95
     },
     "dataset_config": {
-        "train_dataset": "wikitext",
+        "train_dataset": "data/filtered_c4",
         "seq_len": 1024,
         "batch_size": 8,
         "tokenizer": "gpt2"
