@@ -6,7 +6,7 @@ import wandb
 
 # Set run parameters
 min_doc_len = 1024
-target_num_tokens = int(1e8)
+target_num_tokens = int(2e9)  # ~Chinchilla-optimal for 100M
 output_base_path = 'filtered_c4/'
 burnin_time_in_seconds = 10
 
