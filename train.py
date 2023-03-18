@@ -29,6 +29,7 @@ wandb.init(project='eliot')
 
 # Load data
 print('Loading data')
+dataset_config = cfg.dataset_config
 dataset = wikitext_utils.load_wikitext_train()
 text_iterator = wikitext_utils.make_shuffled_text_iterator(dataset)
 encoding = tiktoken.get_encoding('gpt2')
@@ -36,8 +37,8 @@ print('Data loaded')
 
 # Create datasource
 print('Building datasources')
-seq_len = 128
-batch_size = 32
+seq_len = dataset_config.seq_len
+batch_size = dataset_config.batch_size
 process_fn = batching.make_processor(encoding.encode, seq_len)
 datasources = [batching.DataSource(text_iterator, process_fn)
                        for _ in range(batch_size)]
