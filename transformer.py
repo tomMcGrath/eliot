@@ -30,7 +30,7 @@ def weighted_sum(weights: torch.Tensor, values: torch.Tensor) -> torch.Tensor:
 
 
 class Attention(torch.nn.Module):
-    """Compute multi-head self-attention. TODO: try einsum version."""
+    """Compute multi-head self-attention."""
 
     def __init__(self,
                  n_heads: int,
