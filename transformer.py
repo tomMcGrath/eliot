@@ -4,11 +4,10 @@ import numpy as np
 
 def compute_attn_logits(q: torch.Tensor, k: torch.Tensor) -> torch.Tensor:
     """Computes attention logits for query and key embeddings."""
-    b, t, n_heads, d_head = q.shape  # k should be the same
-    q = q.view((b, n_heads, t, d_head))  # [B, H, T, d_head]
-    k_T = k.permute(0, 2, 3, 1)  # [B, H, d_head, T]
-    attn_logits = (q @ k_T) / np.sqrt(d_head)  # [B, H, T, T]
-    return attn_logits
+    # Einsum indices b{q,k}hi: batch, {query_pos, key_pos}, head, d_head
+    attn_logits = torch.einsum('bqhi,bkhi->bhqk', q, k)
+    d_head = q.shape[-1]
+    return attn_logits / np.sqrt(d_head)
 
 
 def build_causal_mask(maxlen):
@@ -23,8 +22,11 @@ def masked_softmax(logits: torch.Tensor, mask: torch.Tensor) -> torch.Tensor:
 
 def weighted_sum(weights: torch.Tensor, values: torch.Tensor) -> torch.Tensor:
     """Computes the weighted sum of values across timesteps."""
-    values = values.transpose(1, 2)  # [B, T, H, d_head] -> [B, H, T, d_head]
-    return (weights @ values).transpose(1, 2)  # [B, T, H, d_head]
+    # Einsum indices: 
+    #   - bhqk: batch, head, query_pos, key_pos  (attention weights)
+    #   - bkhd: batch, key_pos, head, d_head  (values)
+    #   - bqhd: batch, query_pos (T), head, d_head  (per head outputs)
+    return torch.einsum('bhqk,bkhd->bqhd', weights, values)
 
 
 class Attention(torch.nn.Module):
