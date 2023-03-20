@@ -6,15 +6,16 @@ import wandb
 
 # Set run parameters
 min_doc_len = 1024
-target_num_tokens = int(2e9)  # ~Chinchilla-optimal for 100M
-output_base_path = 'filtered_c4/'
+target_num_tokens = int(1e6)  # ~Chinchilla-optimal for 100M
+output_base_path = 'filtered_c4_val/'
+split = 'validation'
 burnin_time_in_seconds = 10
 
 # Use W&B to log progress for long runs
 wandb.init(project='eliot-data')
 
 # Setup streaming dataset
-dataset = load_dataset("c4", "en", split="train", streaming=True)
+dataset = load_dataset('c4', 'en', split=split, streaming=True)
 
 # Use gpt2 encoding to determine number of tokens
 encoding = tiktoken.get_encoding('gpt2')
